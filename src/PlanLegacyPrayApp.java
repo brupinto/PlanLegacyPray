@@ -319,23 +319,22 @@ public class PlanLegacyPrayApp {
 				String texto;
 				
 				if (dia.getlive()) {
-					texto = "Dia "+ String.valueOf(dia.getDia())+"-"+ dia.getDiaSemana()+"\r\n"
+					texto = "Dia "+ String.valueOf(dia.getDia())+"/"+String.valueOf(mes)+"-"+ dia.getDiaSemana()+"\r\n"
 					      + "Dia de Live no Instagram\r\n";
 				}
 				else {
 					if (dia.getTestemunho()) {
-						texto = "Dia "+ String.valueOf(dia.getDia())+"-"+ dia.getDiaSemana()+"\r\n"
+						texto = "Dia "+ String.valueOf(dia.getDia())+"/"+String.valueOf(mes)+"-"+ dia.getDiaSemana()+"\r\n"
 							      + "Dia de Testemunho\r\n"
-							      + "Apresentação.: "+dia.getColaboradores().get(0).getNome()+"\r\n"
+							      + "Condizir.: "+dia.getColaboradores().get(0).getNome()+"\r\n"
 							      + "Testemunhante.:\r\n";
 					}
 					else {
-						texto = "Dia "+ String.valueOf(dia.getDia())+"-"+ dia.getDiaSemana()+"\r\n"
+						texto = "Dia "+ String.valueOf(dia.getDia())+"/"+String.valueOf(mes)+"-"+ dia.getDiaSemana()+"\r\n"
 							      + "Dia de Oração\r\n"
-							      + "Apresentação.: "+dia.getColaboradores().get(0).getNome()+"\r\n"
+							      + "Conduzir.: "+dia.getColaboradores().get(0).getNome()+"\r\n"
 								  + "Orador.: "+dia.getColaboradores().get(1).getNome()+"\r\n"
-						  		  + "Backup/orador primeiro topico.: "+dia.getColaboradores().get(2).getNome()+"\r\n";
-						
+						  		  + "orador primeiro topico.: "+dia.getColaboradores().get(2).getNome()+"\r\n";
 					}
 				}
 					
