@@ -9,6 +9,8 @@ public class Dia {
 	private Integer diaSemana;
 	private Boolean testemunho;
 	private Boolean live;
+	private Boolean culto;
+	private Boolean domingo;
 	private List<Colaborador> colaboradores;
 	
 	public Dia() {
@@ -20,6 +22,8 @@ public class Dia {
 		this.colaboradores = new ArrayList<Colaborador>();
 		this.testemunho = false;
 		this.live = false;
+		this.culto = false;
+		this.domingo = false;
 	}
 	
 	public String getDiaSemana() {
@@ -73,5 +77,17 @@ public class Dia {
 	}
 	public Boolean getlive() {
 		return this.live;
+	}
+	public void setCulto() {
+		this.culto = true;
+	}
+	public Boolean getCulto() {
+		return this.culto;
+	}
+	public void setDomingo() {
+		this.domingo = true;
+	}
+	public Boolean getDomingo() {
+		return this.domingo;
 	}
 }

@@ -27,18 +27,52 @@ public class PlanLegacyPrayApp {
 	int ano;
 	
 	public static void main(String[] args) throws URISyntaxException {
-		if (args.length > 0) {
+		if (args.length > 1) {
 			File jarDir = new File(PlanLegacyPrayApp.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
 			System.out.println("path "+jarDir.getPath());
-			(new PlanLegacyPrayApp()).execute(args[0], jarDir);
+			(new PlanLegacyPrayApp()).execute(args[0], args[1], jarDir);
 		} else {
-			System.out.println("É necessário colocar o MÊS/ANO na chamada do aplicativo");
+			System.out.println("Os parametros necessarios são: <E/O> <MES/ANO>");
+			System.out.println("E - layout de Estacionamento");
+			System.out.println("O - layout de Oração");
+			System.out.println("<MES/ANO> para buscar o layout do mês");
 		}
 			
 	}
 	
-	private void execute(String mesano, File jarDir) {
-		this.jarDir = jarDir;
+	private void execute(String layout, String mesano, File jarDir) {
+		
+		switch (layout) {
+		case "O":{
+			layoutOracao(mesano);
+			break;
+		}	
+		case "E":{
+			layoutEstacionamento(mesano);
+			break;
+		}
+		default:{
+			System.out.println("Deve ser utilizado o layout 'O' Oração / 'E' Estacionamento");
+			break;
+		}}
+	}
+	
+	private void layoutEstacionamento(String mesano) {
+		this.mes = Integer.parseInt((String)mesano.subSequence(0, 2));
+		this.ano = Integer.parseInt((String)mesano.subSequence(3,7));
+		
+		System.out.println("iniciando programação do Estacionamento Legacy para o "+mesano);
+		this.montaCalendarioEstacionamento(mes, ano);
+		this.loadColaboradores();
+		System.out.println("Carregando base de colaboradores: "+ String.valueOf(colaboradores.size()));
+		
+		System.out.println("Processando o mes: "+mesano);
+		this.searchColaboradorDiaEstacionamento();
+		this.saveResultEstacionamento();
+		
+	}
+	
+	private void layoutOracao(String mesano) {
 		this.mes = Integer.parseInt((String)mesano.subSequence(0, 2));
 		this.ano = Integer.parseInt((String)mesano.subSequence(3,7));
 		
@@ -50,7 +84,6 @@ public class PlanLegacyPrayApp {
 		System.out.println("Processando o mes: "+mesano);
 		this.searchColaboradorDia();
 		this.saveResult();
-		
 	}
 	
 	private void montaCalendario(int mes, int ano) {
@@ -62,8 +95,7 @@ public class PlanLegacyPrayApp {
 		while(cal.get(Calendar.MONTH) == (mes-1)) {
 			Dia dia = new Dia(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.DAY_OF_WEEK));
 			
-			if ((cal.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) || 
-			   (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
+			if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
 				dia.setTestemunho();
 			}
 			
@@ -73,6 +105,39 @@ public class PlanLegacyPrayApp {
 			}
 
 			this.planMes.add(dia);
+			cal.add(Calendar.DAY_OF_MONTH, 1);
+		}
+	}
+	
+	private void montaCalendarioEstacionamento(int mes, int ano) {
+		this.planMes = new ArrayList<Dia>();
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(ano, (mes-1), 1);
+						
+		while(cal.get(Calendar.MONTH) == (mes-1)) {
+			Dia dia = new Dia(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.DAY_OF_WEEK));
+			
+			if ((cal.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) ||
+				(cal.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) ||
+				(cal.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY)){
+				dia.setCulto();
+				this.planMes.add(dia);
+			}
+			
+			if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+				if (dia.getDia() + 14 > 31) {
+					dia.setCulto();
+					this.planMes.add(dia);
+				}
+			}
+			
+			if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+				dia.setCulto();
+				dia.setDomingo();
+				this.planMes.add(dia);
+			}
+			
 			cal.add(Calendar.DAY_OF_MONTH, 1);
 		}
 	}
@@ -288,6 +353,41 @@ public class PlanLegacyPrayApp {
 			}
 		}
 	}
+	
+	private void searchColaboradorDiaEstacionamento() {
+		
+		this.resetFullColabs();
+		
+		for (Dia dia : planMes) {
+			System.out.println("Selecionando colaboradores para o dia "+ String.valueOf(dia.getDia())+"/"+ String.valueOf(this.mes));
+			Calendar cal = Calendar.getInstance();
+			cal.set(ano,(mes-1), dia.getDia());
+			
+			if (dia.getDomingo()) {
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+			}
+			else {
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));				
+			}
+		}
+	}
+	
 	private void searchColaboradorDia() {
 				
 		this.resetFullColabs();
@@ -347,7 +447,52 @@ public class PlanLegacyPrayApp {
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
-
-		
+	}
+	
+	private void saveResultEstacionamento() {
+		try {
+			File file = new File(jarDir,"programacao_"+String.valueOf(mes)+"_"+String.valueOf(ano)+".txt");
+			FileWriter output = new FileWriter(file);
+			
+			for (Dia dia : planMes) {
+				String texto = "";	
+				
+				if (dia.getDomingo()) {
+					texto = "Dia "+ String.valueOf(dia.getDia())+"/"+String.valueOf(mes)+"-"+ dia.getDiaSemana()+"\r\n";
+					texto+="10h \r\n";	
+					texto+= dia.getColaboradores().get(0).getNome()+"\r\n"
+						  + dia.getColaboradores().get(1).getNome()+"\r\n"
+						  + dia.getColaboradores().get(2).getNome()+"\r\n"
+						  + dia.getColaboradores().get(3).getNome()+"\r\n";
+					texto+="\r\n";
+					texto+="17h \r\n";
+					texto+= dia.getColaboradores().get(4).getNome()+"\r\n"
+						  + dia.getColaboradores().get(5).getNome()+"\r\n"
+						  + dia.getColaboradores().get(6).getNome()+"\r\n"
+						  + dia.getColaboradores().get(7).getNome()+"\r\n";
+					texto+="\r\n";
+					texto+="19h \r\n";
+					texto+= dia.getColaboradores().get(8).getNome()+"\r\n"
+						  + dia.getColaboradores().get(9).getNome()+"\r\n"
+						  + dia.getColaboradores().get(10).getNome()+"\r\n"
+						  + dia.getColaboradores().get(11).getNome()+"\r\n";
+				}
+				else {
+					texto = "Dia "+ String.valueOf(dia.getDia())+"/"+String.valueOf(mes)+"-"+ dia.getDiaSemana()+"\r\n"
+							+ dia.getColaboradores().get(0).getNome()+"\r\n"
+							+ dia.getColaboradores().get(1).getNome()+"\r\n"
+							+ dia.getColaboradores().get(2).getNome()+"\r\n"
+							+ dia.getColaboradores().get(3).getNome()+"\r\n";	
+				}
+									
+				texto+="\r\n";
+				output.write(texto);
+			}
+			
+			output.close();
+			
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }
