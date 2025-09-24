@@ -95,10 +95,6 @@ public class PlanLegacyPrayApp {
 		while(cal.get(Calendar.MONTH) == (mes-1)) {
 			Dia dia = new Dia(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.DAY_OF_WEEK));
 			
-			if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-				dia.setTestemunho();
-			}
-			
 			if ((cal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) || 
 			   (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)) {
 				dia.setLive();
@@ -397,15 +393,10 @@ public class PlanLegacyPrayApp {
 			Calendar cal = Calendar.getInstance();
 			cal.set(ano,(mes-1), dia.getDia());
 			
-			if (dia.getTestemunho()) {
+			if (!dia.getlive()) {
 				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
-			}
-			else {
-				if (!dia.getlive()) {
-					dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
-					dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
-					dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));		
-				}
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));
+				dia.addColaborador(getColaborador(cal.get(Calendar.DAY_OF_WEEK)));		
 			}
 		}
 	}
